@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Чат - Облачный ЖКХ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="gradient-bg text-gray-100 min-h-screen p-4 md:p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-extrabold mb-8 gradient-text animate-slideIn">Чат с КСК</h1>
+    <a href="index.html" class="px-4 py-2 bg-blue-600 rounded-lg button-hover animate-slideIn inline-block mb-6">Назад</a>
+    <div class="glass-effect p-6 rounded-2xl shadow-2xl card-hover">
+      <div id="chatMessages" class="h-96 overflow-y-auto mb-4 p-4 bg-gray-800/50 rounded-lg"></div>
+      <form id="chatForm" class="flex gap-2">
+        <input type="text" id="chatInput" placeholder="Сообщение..." class="flex-1 bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-100 animate-slideIn" style="animation-delay: 0.2s;">
+        <button type="submit" class="px-4 py-2 bg-blue-600 rounded-lg button-hover animate-slideIn" style="animation-delay: 0.4s;">Отправить</button>
+      </form>
+    </div>
+  </div>
+  <script src="chat.js"></script>
+  <script>
+    // Анимации
+    gsap.from('.animate-slideIn', {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      stagger: 0.2,
+      ease: 'power3.out',
+    });
+
+    // Анимация новых сообщений
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length) {
+          gsap.from(mutation.addedNodes, {
+            opacity: 0,
+            y: 20,
+            duration: 0.5,
+            ease: 'power3.out',
+          });
+        }
+      });
+    });
+    observer.observe(document.getElementById('chatMessages'), { childList: true });
+  </script>
+</body>
+</html>

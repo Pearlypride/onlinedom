@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Платежи - Облачный ЖКХ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="gradient-bg text-gray-100 min-h-screen p-4 md:p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-extrabold mb-8 gradient-text animate-slideIn">История платежей</h1>
+    <a href="index.html" class="px-4 py-2 bg-blue-600 rounded-lg button-hover animate-slideIn mb-6 inline-block">Назад</a>
+    <div class="glass-effect p-6 rounded-2xl shadow-2xl card-hover">
+      <table class="w-full text-left">
+        <thead>
+          <tr class="text-gray-400">
+            <th class="p-2">Дата</th>
+            <th class="p-2">Сумма</th>
+            <th class="p-2">Описание</th>
+          </tr>
+        </thead>
+        <tbody id="paymentsList"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.name) {
+      alert('Пожалуйста, войдите в систему');
+      window.location.href = 'login.html';
+      return;
+    }
+
+    async function loadPayments() {
+      try {
+        const res = await fetch(`http://localhost:3000/api/payments?user=${user.name}`);
+        if (!res.ok) throw new Error('Ошибка загрузки платежей');
+        const data = await res.json();
+        const list = document.getElementById('paymentsList');
+        list.innerHTML = data.map(p => `
+          <tr class="border-t border-gray-700 animate-slideIn">
+            <td class="p-2">${p.date}</td>
+            <td class="p-2">${p.amount} тг</td>
+            <td class="p-2">${p.description}</td>
+          </tr>
+        `).join('');
+      } catch (error) {
+        document.getElementById('paymentsList').innerHTML = `<tr><td colspan="3" class="text-red-400 p-4">Ошибка: ${error.message}</td></tr>`;
+      }
+    }
+
+    loadPayments();
+
+    // Анимации
+    gsap.from('.animate-slideIn', {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      stagger: 0.2,
+      ease: 'power3.out',
+    });
+
+    // Анимация строк таблицы
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.addedNodes.length) {
+          gsap.from(mutation.addedNodes, {
+            opacity: 0,
+            y: 20,
+            duration: 0.5,
+            stagger: 0.1,
+            ease: 'power3.out',
+          });
+        }
+      });
+    });
+    observer.observe(document.getElementById('paymentsList'), { childList: true });
+  </script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Панель застройщика - Облачный ЖКХ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="gradient-bg text-gray-100 min-h-screen p-4 md:p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-extrabold mb-8 gradient-text animate-slideIn">Панель застройщика</h1>
+    <a href="index.html" class="px-4 py-2 bg-blue-600 rounded-lg button-hover animate-slideIn mb-6 inline-block">Назад</a>
+    
+    <div class="glass-effect p-6 rounded-2xl shadow-2xl mb-8 card-hover">
+      <h2 class="text-2xl font-semibold mb-4 gradient-text animate-slideIn">Обратная связь</h2>
+      <form id="feedbackForm" class="space-y-4">
+        <input type="text" id="house" placeholder="Дом / подъезд" class="w-full bg-gray-800 border border-gray-700 p-3 rounded-lg text-gray-100 animate-slideIn" required>
+        <textarea id="feedback" placeholder="Отзыв" class="w-full bg-gray-800 border border-gray-700 p-3 rounded-lg h-24 text-gray-100 animate-slideIn" required></textarea>
+        <button type="submit" class="px-4 py-2 bg-blue-600 rounded-lg button Grind-hover animate-slideIn">Отправить</button>
+      </form>
+    </div>
+
+    <div class="glass-effect p-6 rounded-2xl shadow-2xl mb-8 card-hover">
+      <h2 class="text-2xl font-semibold mb-4 gradient-text animate-slideIn">Статистика жалоб</h2>
+      <div id="analytics"></div>
+    </div>
+  </div>
+  <script>
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.name || user.role !== 'builder') {
+      alert('Доступ только для застройщиков');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    async function loadAnalytics() {
+      try {
+        const res = await fetch('http://localhost:3000/api/analytics');
+        if (!res.ok) throw new Error('Ошибка загрузки аналитики');
+        const data = await res.json();
+        document.getElementById('analytics').innerHTML = `
+          <p class="animate-slideIn">Всего жалоб: ${data.totalComplaints}</p>
+          <p class="animate-slideIn">По категориям:</p>
+          <ul>
+            ${Object.entries(data.byCategory).map(([cat, count]) => `<li class="animate-slideIn">${cat}: ${count}</li>`).join('')}
+          </ul>
+        `;
+      } catch (error) {
+        document.getElementById('analytics').innerHTML = `<p class="text-red-400 animate-slideIn">Ошибка: ${error.message}</p>`;
+      }
+    }
+
+    document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const house = document.getElementById('house').value;
+      const feedback = document.getElementById('feedback').value;
+      try {
+        const res = await fetch('http://localhost:3000/api/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ house, feedback, user: user.name }),
+        });
+        if (!res.ok) throw new Error('Ошибка отправки отзыва');
+        alert('Отзыв отправлен');
+        document.getElementById('feedbackForm').reset();
+      } catch (error) {
+        alert(`Ошибка: ${error.message}`);
+      }
+    });
+
+    loadAnalytics();
+
+    // Анимации
+    gsap.from('.animate-slideIn', {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      stagger: 0.2,
+      ease: 'power3.out',
+    });
+  </script>
+</body>
+</html>

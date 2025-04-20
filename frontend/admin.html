@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Панель КСК - Облачный ЖКХ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="gradient-bg text-gray-100 min-h-screen p-4 md:p-8">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-extrabold mb-8 gradient-text animate-slideIn">Панель КСК</h1>
+    <a href="index.html" class="px-4 py-2 bg-blue-600 rounded-lg button-hover animate-slideIn mb-6 inline-block">Назад</a>
+    
+    <div class="glass-effect p-6 rounded-2xl shadow-2xl mb-8 card-hover">
+      <h2 class="text-2xl font-semibold mb-4 gradient-text animate-slideIn">Аналитика</h2>
+      <div id="analytics" class="grid grid-cols-1 sm:grid-cols-3 gap-4"></div>
+    </div>
+
+    <div class="glass-effect p-6 rounded-2xl shadow-2xl mb-8 card-hover">
+      <h2 class="text-2xl font-semibold mb-4 gradient-text animate-slideIn">Массовые уведомления</h2>
+      <form id="notificationForm" class="space-y-4">
+        <textarea id="notificationMessage" placeholder="Текст уведомления" class="w-full bg-gray-800 border border-gray-700 p-3 rounded-lg h-24 text-gray-100 animate-slideIn" required></textarea>
+        <button type="submit" class="px-4 py-2 bg-blue-600 rounded-lg button-hover animate-slideIn">Отправить всем</button>
+      </form>
+    </div>
+
+    <h2 class="text-2xl font-semibold mb-6 gradient-text animate-slideIn">Жалобы</h2>
+    <ul id="complaintsList" class="space-y-4"></ul>
+  </div>
+  <script>
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (!user.name || user.role !== 'ksk') {
+      alert('Доступ только для КСК');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    async function loadComplaints() {
+      try {
+        const res = await fetch('http://localhost:3000/api/complaints');
+        if (!res.ok) throw new Error('Ошибка загрузки жалоб');
+        const data = await res.json();
+        const list = document.getElementById('complaintsList');
+        list.innerHTML = data.map(c => `
+          <li class="glass-effect p-4 rounded-lg flex justify-between items-center card-hover animate-slideIn">
+            <div>
+              <strong class="text-blue-400">${c.name}</strong> (${c.apartment}) [${c.category}] [${c.status}]:<br>
+              <p class="text-gray-200 mt-1">${c.message}</p>
+              ${c.image ? `<img src="/uploads/${c.image}" alt="Жалоба" class="mt-2 max-w-xs rounded-lg">` : ''}
+            </div>
+            <select onchange="updateStatus(${c.id}, this.value)" class="bg-gray-800 border border-gray-700 p-2 rounded-lg">
+              <option value="Новая" ${c.status === 'Новая' ? 'selected' : ''}>Новая</option>
+              <option value="В обработке" ${c.status === 'В обработке' ? 'selected' : ''}>В обработке</option>
+              <option value="Решено" ${c.status === 'Решено' ? 'selected' : ''}>Решено</option>
+            </select>
+          </li>
+        `).join('');
+      } catch (error) {
+        document.getElementById('complaintsList').innerHTML = `<li class="text-red-400 p-4">Ошибка: ${error.message}</li>`;
+      }
+    }
+
+    async function updateStatus(id, status) {
+      try {
+        const res = await fetch(`http://localhost:3000/api/complaints/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status }),
+        });
+        if (!res.ok) throw new Error('Ошибка обновления статуса');
+        await loadComplaints();
+      } catch (error) {
+        alert(`Ошибка: ${error.message}`);
+      }
+    }
+
+    async function loadAnalytics() {
+      try {
+        const res = await fetch('http://localhost:3000/api/analytics');
+        if (!res.ok) throw new Error('Ошибка загрузки аналитики');
+        const data = await res.json();
+        document.getElementById('analytics').innerHTML = `
+          <div class="p-4 bg-gray-800/50 rounded-lg card-hover animate-slideIn">
+            <p>Всего жалоб: ${data.totalComplaints}</p>
+          </div>
+          <div class="p-4 bg-gray-800/50 rounded-lg card-hover animate-slideIn">
+            <p>Новые: ${data.newComplaints}</p>
+          </div>
+          <div class="p-4 bg-gray-800/50 rounded-lg card-hover animate-slideIn">
+            <p>Решено: ${data.resolvedComplaints}</p>
+          </div>
+        `;
+      } catch (error) {
+        document.getElementById('analytics').innerHTML = `<p class="text-red-400">Ошибка: ${error.message}</p>`;
+      }
+    }
+
+    document.getElementById('notificationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = document.getElementById('notificationMessage').value;
+      try {
+        const res = await fetch('http://localhost:3000/api/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message }),
+        });
+        if (!res.ok) throw new Error('Ошибка отправки уведомления');
+        alert('Уведомление отправлено');
+        document.getElementById('notificationMessage').value = '';
+      } catch (error) {
+        alert(`Ошибка: ${error.message}`);
+      }
+    });
+
+    loadComplaints();
+    loadAnalytics();
+
+    // Анимации
+    gsap.from('.animate-slideIn', {
+      opacity: 0,
+      y: 30,
+      duration: 1,
+      stagger: 0.2,
+      ease: 'power3.out',
+    });
+  </script>
+</body>
+</html>

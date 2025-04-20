@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Облачный ЖКХ</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .hero-section {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .phone-image {
+      transform: perspective(1000px) rotateY(-15deg);
+      transition: transform 0.5s ease;
+    }
+    .phone-image:hover {
+      transform: perspective(1000px) rotateY(0deg);
+    }
+    #particles-js {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+    .gradient-text-animated {
+      background: linear-gradient(90deg, #60a5fa, #a855f7, #60a5fa);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: gradientShift 5s linear infinite;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0%; }
+      100% { background-position: 200%; }
+    }
+  </style>
+</head>
+<body class="gradient-bg text-gray-100">
+  <!-- Частицы на фоне -->
+  <div id="particles-js"></div>
+
+  <!-- Навигация -->
+  <nav class="fixed top-0 left-0 w-full glass-effect p-4 z-50">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-extrabold gradient-text animate-slideIn">
+        Облачный ЖКХ
+      </h1>
+      <div class="flex gap-3">
+        <a href="chat.html" class="px-4 py-2 bg-green-600 rounded-lg button-hover animate-slideIn">Чат</a>
+        <a href="payments.html" class="px-4 py-2 bg-yellow-600 rounded-lg button-hover animate-slideIn">Платежи</a>
+        <a href="admin.html" id="adminBtn" class="hidden px-4 py-2 bg-purple-600 rounded-lg button-hover animate-slideIn">КСК</a>
+        <a href="builder.html" id="builderBtn" class="hidden px-4 py-2 bg-indigo-600 rounded-lg button-hover animate-slideIn">Застройщик</a>
+        <button id="loginBtn" class="px-4 py-2 bg-blue-600 rounded-lg button-hover animate-slideIn">Войти</button>
+        <button id="registerBtn" class="px-4 py-2 bg-blue-500 rounded-lg button-hover animate-slideIn">Регистрация</button>
+        <button id="logoutBtn" class="hidden px-4 py-2 bg-red-600 rounded-lg button-hover animate-slideIn">Выйти</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Главная секция -->
+  <section class="hero-section">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between px-4 relative z-10">
+      <!-- Текст -->
+      <div class="lg:w-1/2 text-center lg:text-left mb-10 lg:mb-0">
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-6 gradient-text-animated animate-slideIn">
+          Управляй своим домом с Облачный ЖКХ
+        </h1>
+        <p class="text-lg md:text-xl text-gray-300 mb-8 animate-slideIn" style="animation-delay: 0.2s;">
+          Подавай жалобы, общайся с КСК, следи за платежами и голосуй за улучшения — всё в одном приложении.
+        </p>
+        <button class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg button-hover animate-slideIn" style="animation-delay: 0.4s;">
+          Начать бесплатно
+        </button>
+      </div>
+      <!-- Изображение телефона -->
+      <div class="lg:w-1/2 flex justify-center animate-slideIn" style="animation-delay: 0.6s;">
+        <img src="https://via.placeholder.com/300x600?text=App+Interface" alt="Телефон с приложением" class="phone-image max-w-xs md:max-w-sm">
+      </div>
+    </div>
+  </section>
+
+  <!-- Секция преимуществ -->
+  <section class="py-20">
+    <div class="max-w-7xl mx-auto px-4">
+      <h2 class="text-3xl md:text-4xl font-extrabold text-center mb-12 gradient-text">
+        Почему выбирают Облачный ЖКХ?
+      </h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="benefit-card glass-effect p-6 rounded-2xl shadow-2xl text-center card-hover">
+          <h3 class="text-xl font-semibold mb-4 gradient-text">Прозрачность</h3>
+          <p class="text-gray-300">Следи за всеми платежами и начислениями в одном месте.</p>
+        </div>
+        <div class="benefit-card glass-effect p-6 rounded-2xl shadow-2xl text-center card-hover">
+          <h3 class="text-xl font-semibold mb-4 gradient-text">Удобство</h3>
+          <p class="text-gray-300">Подавай жалобы и общайся с КСК прямо из приложения.</p>
+        </div>
+        <div class="benefit-card glass-effect p-6 rounded-2xl shadow-2xl text-center card-hover">
+          <h3 class="text-xl font-semibold mb-4 gradient-text">Сообщество</h3>
+          <p class="text-gray-300">Голосуй за улучшения и будь в курсе новостей дома.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Инициализация частиц
+    particlesJS('particles-js', {
+      particles: {
+        number: { value: 80, density: { enable: true, value_area: 800 } },
+        color: { value: '#60a5fa' },
+        shape: { type: 'circle' },
+        opacity: { value: 0.5, random: true },
+        size: { value: 3, random: true },
+        line_linked: { enable: true, distance: 150, color: '#60a5fa', opacity: 0.4, width: 1 },
+        move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+      },
+      interactivity: {
+        detect_on: 'canvas',
+        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+        modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+      },
+      retina_detect: true
+    });
+
+    // Проверка авторизации
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    const loginBtn = document.getElementById('loginBtn');
+    const registerBtn = document.getElementById('registerBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const adminBtn = document.getElementById('adminBtn');
+    const builderBtn = document.getElementById('builderBtn');
+
+    if (user.name) {
+      loginBtn.classList.add('hidden');
+      registerBtn.classList.add('hidden');
+      logoutBtn.classList.remove('hidden');
+      if (user.role === 'ksk') adminBtn.classList.remove('hidden');
+      if (user.role === 'builder') builderBtn.classList.remove('hidden');
+    }
+
+    // Переход на страницу логина и регистрации
+    loginBtn.addEventListener('click', () => {
+      window.location.href = 'login.html';
+    });
+    registerBtn.addEventListener('click', () => {
+      window.location.href = 'login.html'; // Пока одна страница для входа и регистрации
+    });
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('user');
+      window.location.reload();
+    });
+
+    // Анимации
+    gsap.from('.animate-slideIn', {
+      opacity: 0,
+      y: 50,
+      duration: 1,
+      stagger: 0.2,
+      ease: 'power3.out',
+    });
+
+    // Появление телефона с вращением
+    gsap.from('.phone-image', {
+      opacity: 0,
+      rotateY: 90,
+      duration: 1.5,
+      ease: 'back.out(1.7)',
+      delay: 0.6,
+    });
+
+    // Анимация карточек преимуществ при скролле с параллакс-эффектом
+    gsap.utils.toArray('.benefit-card').forEach((card, index) => {
+      gsap.from(card, {
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 80%',
+        },
+        opacity: 0,
+        x: index % 2 === 0 ? -100 : 100,
+        duration: 1,
+        ease: 'power3.out',
+      });
+    });
+  </script>
+</body>
+</html>
